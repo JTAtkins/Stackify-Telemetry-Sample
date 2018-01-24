@@ -25,6 +25,10 @@ namespace DefenseAgainstTheDarkArts {
 	const std::string StackifyChannel::PROP_APPLOC = "appLocation";
 	const std::string StackifyChannel::PROP_LOGGER = "logger";
 	const std::string StackifyChannel::PROP_PLATFORM = "platform";
+	const std::string StackifyChannel::PROP_OPERATINGSYSTEM = "operatingSystem";
+	const std::string StackifyChannel::PROP_OSMAJORVERSION = "osMajorVersion";
+	const std::string StackifyChannel::PROP_OSMINORVERSION = "osMinorVersion";
+	const std::string StackifyChannel::PROP_TIMEZONE = "timezone";
 
 	StackifyChannel::StackifyChannel() : str_(std::clog)
 	{
@@ -125,6 +129,14 @@ namespace DefenseAgainstTheDarkArts {
 			platform_ = value;
 		else if (name == PROP_SERVERNAME)
 			server_name_ = value;
+		else if (name == PROP_OPERATINGSYSTEM)
+			operating_system_ = value;
+		else if (name == PROP_OSMAJORVERSION)
+			os_major_version_ = value;
+		else if (name == PROP_OSMINORVERSION)
+			os_minor_version_ = value;
+		else if (name == PROP_TIMEZONE)
+			timezone_ = value;
 		else
 			Channel::setProperty(name, value);
 	}
@@ -145,6 +157,14 @@ namespace DefenseAgainstTheDarkArts {
 			return platform_;
 		if (name == PROP_SERVERNAME)
 			return server_name_;
+		if (name == PROP_OPERATINGSYSTEM)
+			return operating_system_;
+		if (name == PROP_OSMAJORVERSION)
+			return os_major_version_;
+		if (name == PROP_OSMINORVERSION)
+			return os_minor_version_;
+		if (name == PROP_TIMEZONE)
+			return timezone_;
 
 		return Channel::getProperty(name);
 	}
@@ -249,10 +269,12 @@ namespace DefenseAgainstTheDarkArts {
 		message->set("EpochMs", epoch.str());
 
 		//Source Method
-		//message->set("SrcMethod", msg.getSourceFile());
+		if (msg.getSourceFile() != nullptr)
+			message->set("SrcMethod", msg.getSourceFile());
 
 		//Source Line
-		//message->set("SrcLine,", msg.getSourceLine());
+		if (msg.getSourceLine() != 0)
+			message->set("SrcLine,", msg.getSourceLine());
 
 		//Message Priority
 		const auto priority = msg.getPriority();
@@ -295,6 +317,11 @@ namespace DefenseAgainstTheDarkArts {
 		//Add messages array to root
 		root->set("Msgs", messages);
 
+		//Uncomment to debug json
+		//std::stringstream sv;
+		//root->stringify(sv, 4);
+		//std::string svs = sv.str();
+
 		return root;
 	}
 
@@ -330,17 +357,6 @@ namespace DefenseAgainstTheDarkArts {
 		Poco::JSON::Object::Ptr message = new Poco::JSON::Object();
 		message->set("Msg", msg.getText());
 		message->set("Th", msg.getThread());
-		
-		//Exception
-		Poco::JSON::Object::Ptr ex = new Poco::JSON::Object();
-		Poco::JSON::Object::Ptr environment_detail = new Poco::JSON::Object();
-		environment_detail->set("DeviceName", server_name_);
-		environment_detail->set("AppLocation", location_);
-		environment_detail->set("ConfiguredAppName", app_name_);
-		environment_detail->set("ConfiguredEnvironmentName", environment_);
-		
-		//Add Environment Detail to Exception Object
-		ex->set("Ex", environment_detail);
 
 		//Epoch
 		Poco::Timestamp epoch_time = msg.getTime();
@@ -349,68 +365,136 @@ namespace DefenseAgainstTheDarkArts {
 		std::stringstream epoch;
 		epoch << epoch_milliseconds;
 
-		//Set Exception EpochMilliseconds
-		ex->set("OccurredEpochMillis", epoch.str());
-
-		/*"Error": {
-			"Message": "java.lang.NullPointerException: Something important was null that can't be null (Example error message with exception details)",
-				"ErrorType" : "java.lang.RuntimeException",
-				"SourceMethod" : "com.stackify.error.test.SomeSweetClass.doSomething",
-				"StackTrace" : [
-			{
-				"CodeFileName": "SomeSweetClass.java",
-					"LineNum" : 16,
-					"Method" : "com.stackify.error.test.SomeSweetClass.doSomething"
-			},
-			{
-				"CodeFileName": "StackifyErrorAppenderTest.java",
-				"LineNum" : 44,
-				"Method" : "com.stackify.error.test.StackifyErrorAppenderTest.main"
-			}
-				],*/
-		Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
-
-
 		message->set("EpochMs", epoch.str());
 
 		//Source Method
-		message->set("SrcMethod", msg.getSourceFile());
+		if (msg.getSourceFile() != nullptr)
+			message->set("SrcMethod", msg.getSourceFile());
 
 		//Source Line
-		message->set("SrcLine,", msg.getSourceLine());
+		if (msg.getSourceLine() != 0)
+			message->set("SrcLine,", msg.getSourceLine());
 
 		//Message Priority
 		const auto priority = msg.getPriority();
-		if (priority == Poco::Message::PRIO_CRITICAL)
+		if (priority == Poco::Message::PRIO_FATAL)
+		{
+			message->set("Level", "fatal");
+		}
+		else if (priority == Poco::Message::PRIO_CRITICAL)
 		{
 			message->set("Level", "critical");
 		}
-		else if (priority == Poco::Message::PRIO_DEBUG)
+		else if (priority == Poco::Message::PRIO_ERROR)
 		{
-			message->set("Level", "debug");
+			message->set("Level", "error");
 		}
-		else if (priority == Poco::Message::PRIO_FATAL)
+		else if (priority == Poco::Message::PRIO_WARNING)
 		{
-			message->set("Level", "fatal");
+			message->set("Level", "warning");
+		}
+		else if (priority == Poco::Message::PRIO_NOTICE)
+		{
+			message->set("Level", "notice");
 		}
 		else if (priority == Poco::Message::PRIO_INFORMATION)
 		{
 			message->set("Level", "info");
 		}
-		else if (priority == Poco::Message::PRIO_WARNING)
+		else if (priority == Poco::Message::PRIO_DEBUG)
 		{
-			message->set("Level", "warning");
+			message->set("Level", "debug");
 		}
 		else if (priority == Poco::Message::PRIO_TRACE)
 		{
 			message->set("Level", "trace");
 		}
 
+		//Exception
+		Poco::JSON::Object::Ptr ex = new Poco::JSON::Object();
+		Poco::JSON::Object::Ptr environment_detail = new Poco::JSON::Object();
+		environment_detail->set("DeviceName", server_name_);
+		environment_detail->set("AppLocation", location_);
+		environment_detail->set("ConfiguredAppName", app_name_);
+		environment_detail->set("ConfiguredEnvironmentName", environment_);
+
+		//Add Environment Detail to Exception Object
+		ex->set("EnvironmentDetail", environment_detail);
+		message->set("Ex", ex);
+
+		//Server Variables
+		Poco::JSON::Object::Ptr server_variables = new Poco::JSON::Object();
+		server_variables->set("OperatingSystem", operating_system_);
+		server_variables->set("OsMajorVersion", os_major_version_);
+		server_variables->set("OsMinorVersion", os_minor_version_);
+		server_variables->set("TimeZone", timezone_);
+
+		//Add ServerVariables to Exception Object
+		ex->set("ServerVariables", server_variables);
+
+		//Set OccuredEpochMillis
+		ex->set("OccurredEpochMillis", epoch.str());
+		
+		Poco::JSON::Object::Ptr error = new Poco::JSON::Object();
+		error->set("Message", msg.get("error_message"));
+		error->set("ErrorType", msg.get("error_type"));
+		error->set("SourceMethod", msg.get("source_method"));
+
+		//Parse and Add StackTrace Information
+		Poco::JSON::Array::Ptr stack_trace = new Poco::JSON::Array();
+		const std::string stack = msg.get("stack_trace");
+
+		//Parse the Stack into a vector by line
+		std::stringstream stack_stream;
+		stack_stream << stack;
+
+		std::vector<std::string> stack_elements;
+		std::string line;
+		while (std::getline(stack_stream, line)) {
+			stack_elements.push_back(line);
+		}
+
+		int stack_depth_counter = 0;
+		for (std::vector<std::string>::iterator it = stack_elements.begin(); it != stack_elements.end(); ++it) {
+			it->erase(std::remove(it->begin(), it->end(), '('), it->end()); //Remove parenthesis
+			it->erase(std::remove(it->begin(), it->end(), ')'), it->end()); //Remove parenthesis
+			it->erase(std::remove(it->begin(), it->end(), '"'), it->end()); //Remove quotation
+			it->erase(std::remove(it->begin(), it->end(), ','), it->end()); //Remove commas
+
+			std::stringstream elements;
+			elements << it->c_str();
+
+			//Tokenize
+			std::vector<std::string> tokens{ std::istream_iterator<std::string>{elements}, std::istream_iterator<std::string>{} };
+
+			//Remove unnecessary tokens (in and list)
+			tokens.erase(std::remove(tokens.begin(), tokens.end(), "in"), tokens.end());
+			tokens.erase(std::remove(tokens.begin(), tokens.end(), "line"), tokens.end());
+
+			//Set Stack Element Object
+			Poco::JSON::Object::Ptr stack_object = new Poco::JSON::Object();
+			stack_object->set("CodeFileName", tokens[1]);
+			stack_object->set("LineNum", tokens[2]);
+			stack_object->set("Method", tokens[0]);
+
+			stack_trace->set(stack_depth_counter, stack_object);
+			stack_depth_counter++;
+		}
+
+		//Add StackTrace Array to Error Object
+		error->set("StackTrace", stack_trace);
+		ex->set("Error", error);
+		
 		//Add message to messages array
 		messages->set(0, message);
 
 		//Add messages array to root
 		root->set("Msgs", messages);
+
+		//Uncomment to debug json
+		std::stringstream sv;
+		root->stringify(sv, 4);
+		std::string svs = sv.str();
 
 		return root;
 	}

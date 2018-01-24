@@ -68,6 +68,10 @@ namespace DefenseAgainstTheDarkArts {
 		static const std::string PROP_APPLOC;
 		static const std::string PROP_LOGGER;
 		static const std::string PROP_PLATFORM;
+		static const std::string PROP_OPERATINGSYSTEM;
+		static const std::string PROP_OSMAJORVERSION;
+		static const std::string PROP_OSMINORVERSION;
+		static const std::string PROP_TIMEZONE;
 
 	protected:
 		~StackifyChannel();
@@ -83,6 +87,10 @@ namespace DefenseAgainstTheDarkArts {
 		std::string location_;
 		std::string logger_;
 		std::string platform_;
+		std::string operating_system_;
+		std::string os_major_version_;
+		std::string os_minor_version_;
+		std::string timezone_;
 
 		std::string stackify_logging_save_log_url;
 

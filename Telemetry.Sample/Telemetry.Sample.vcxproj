@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -102,6 +102,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependencies\POCO\XML\bin\Win32\debug_static_mt_141_unicode;$(SolutionDir)Dependencies\POCO\Util\bin\Win32\debug_static_mt_141_unicode;$(SolutionDir)Dependencies\POCO\Crypto\bin\Win32\debug_static_mt_141_unicode;$(SolutionDir)Dependencies\POCO\NetSSL_OpenSSL\bin\Win32\debug_static_mt_141_unicode;$(SolutionDir)Dependencies\POCO\Net\bin\Win32\debug_static_mt_141_unicode;$(SolutionDir)Dependencies\POCO\JSON\bin\Win32\debug_static_mt_141_unicode;$(SolutionDir)Dependencies\POCO\Foundation\bin\Win32\debug_static_mt_141_unicode;$(SolutionDir)Telemetry\Win32\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>Telemetry.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
