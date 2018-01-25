@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Telemetry.h"
+#include "StackifyChannel.h"
 
 #include "Poco/Mutex.h"
 #include "Poco/Timestamp.h"
