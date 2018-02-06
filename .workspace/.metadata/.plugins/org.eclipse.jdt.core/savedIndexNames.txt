@@ -1,0 +1,5 @@
+INDEX VERSION 1.127+C:\Source\GitHub\Stackify-Telemetry-Sample\.workspace\.metadata\.plugins\org.eclipse.jdt.core
+126566234.index
+1235489838.index
+682235015.index
+3487549094.index
