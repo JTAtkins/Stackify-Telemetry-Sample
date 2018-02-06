@@ -34,16 +34,110 @@ namespace DefenseAgainstTheDarkArts
 	{
 	}
 
-	void Stackify::Log(std::wstring message, Priority priority)
+	void Stackify::Trace(std::wstring text)
 	{
+		Message msg;
+		msg.text = text;
+		msg.priority = TRACE;
+
+		web::json::value json = FormatMessage(msg);
+		PostMessage(api_key_, json);
+	}
+
+	void Stackify::Debug(std::wstring text)
+	{
+		Message msg;
+		msg.text = text;
+		msg.priority = DEBUG;
+
+		web::json::value json = FormatMessage(msg);
+		PostMessage(api_key_, json);
+	}
+
+	void Stackify::Information(std::wstring text)
+	{
+		Message msg;
+		msg.text = text;
+		msg.priority = INFORMATION;
+
+		web::json::value json = FormatMessage(msg);
+		PostMessage(api_key_, json);
+	}
+
+	void Stackify::Notice(std::wstring text)
+	{
+		Message msg;
+		msg.text = text;
+		msg.priority = NOTICE;
+
+		web::json::value json = FormatMessage(msg);
+		PostMessage(api_key_, json);
+	}
+
+	void Stackify::Warning(std::wstring text, std::wstring source_method, int source_line)
+	{
+		Message msg;
+		msg.text = text;
+		msg.priority = WARNING;
+		msg.source_method = source_method;
+		msg.source_line = source_line;
+
+		web::json::value json = FormatMessage(msg);
+		PostMessage(api_key_, json);
+	}
+
+	void Stackify::Error(std::wstring text, std::wstring error_message, std::wstring error_type, std::wstring source_method, int source_line)
+	{
+		Exception msg;
+		msg.text = text;
+		msg.priority = ERROR;
+		msg.source_method = source_method;
+		msg.source_line = source_line;
+		msg.error_message = error_message;
+		msg.error_type = error_type;
+
+		web::json::value json = FormatException(msg);
+		PostMessage(api_key_, json);
+	}
+
+	void Stackify::Critical(std::wstring text, std::wstring error_message, std::wstring error_type, std::wstring source_method, int source_line)
+	{
+		Exception msg;
+		msg.text = text;
+		msg.priority = CRITICAL;
+		msg.source_method = source_method;
+		msg.source_line = source_line;
+		msg.error_message = error_message;
+		msg.error_type = error_type;
+
+		web::json::value json = FormatException(msg);
+		PostMessage(api_key_, json);
+	}
+
+	void Stackify::Fatal(std::wstring text, std::wstring error_message, std::wstring error_type, std::wstring source_method, int source_line)
+	{
+		Exception msg;
+		msg.text = text;
+		msg.priority = FATAL;
+		msg.source_method = source_method;
+		msg.source_line = source_line;
+		msg.error_message = error_message;
+		msg.error_type = error_type;
+
+		web::json::value json = FormatException(msg);
+		PostMessage(api_key_, json);
 	}
 
 	void Stackify::Log(Message& message)
 	{
+		web::json::value json = FormatMessage(message);
+		PostMessage(api_key_, json);
 	}
 
 	void Stackify::Log(Exception& exception)
 	{
+		web::json::value json = FormatException(exception);
+		PostMessage(api_key_, json);
 	}
 
 	web::json::value Stackify::FormatMessage(Message msg)
@@ -51,6 +145,7 @@ namespace DefenseAgainstTheDarkArts
 		json::value root;
 		root[L"Env"] = json::value::string(environment_);
 		root[L"ServerName"] = json::value::string(server_name_);
+		root[L"AppName"] = json::value::string(application_name_);
 		root[L"AppLoc"] = json::value::string(location_);
 		root[L"Logger"] = json::value::string(logger_);
 		root[L"Platform"] = json::value::string(platform_);
@@ -60,6 +155,33 @@ namespace DefenseAgainstTheDarkArts
 		message[L"Msg"] = json::value::string(msg.text);
 		message[L"Th"] = json::value::string(msg.thread_name);
 
+		switch (msg.priority) {
+		case TRACE:
+			message[L"Level"] = json::value::string(L"Trace");
+			break;
+		case DEBUG:
+			message[L"Level"] = json::value::string(L"Debug");
+			break;
+		case INFORMATION:
+			message[L"Level"] = json::value::string(L"Information");
+			break;
+		case NOTICE:
+			message[L"Level"] = json::value::string(L"Notice");
+			break;
+		case WARNING:
+			message[L"Level"] = json::value::string(L"Warning");
+			break;
+		case ERROR:
+			message[L"Level"] = json::value::string(L"Error");
+			break;
+		case CRITICAL:
+			message[L"Level"] = json::value::string(L"Critical");
+			break;
+		case FATAL:
+			message[L"Level"] = json::value::string(L"Fatal");
+			break;
+		}
+		
 		//Get Epoch Milliseconds
 		milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 		message[L"EpochMs"] = json::value::number(ms.count());
@@ -134,6 +256,7 @@ namespace DefenseAgainstTheDarkArts
 		json::value root;
 		root[L"Env"] = json::value::string(environment_);
 		root[L"ServerName"] = json::value::string(server_name_);
+		root[L"AppName"] = json::value::string(application_name_);
 		root[L"AppLoc"] = json::value::string(location_);
 		root[L"Logger"] = json::value::string(U("defense-against-the-dark-arts-stackify-logger-pococpp-1.0.0.0"));
 		root[L"Platform"] = json::value::string(U("cpp"));
@@ -142,6 +265,33 @@ namespace DefenseAgainstTheDarkArts
 		json::value message;
 		message[L"Msg"] = json::value::string(ex.text);
 		message[L"Th"] = json::value::string(ex.thread_name);
+
+		switch (ex.priority) {
+		case TRACE:
+			message[L"Level"] = json::value::string(L"Trace");
+			break;
+		case DEBUG:
+			message[L"Level"] = json::value::string(L"Debug");
+			break;
+		case INFORMATION:
+			message[L"Level"] = json::value::string(L"Information");
+			break;
+		case NOTICE:
+			message[L"Level"] = json::value::string(L"Notice");
+			break;
+		case WARNING:
+			message[L"Level"] = json::value::string(L"Warning");
+			break;
+		case ERROR:
+			message[L"Level"] = json::value::string(L"Error");
+			break;
+		case CRITICAL:
+			message[L"Level"] = json::value::string(L"Critical");
+			break;
+		case FATAL:
+			message[L"Level"] = json::value::string(L"Fatal");
+			break;
+		}
 
 		//Get Epoch Milliseconds
 		milliseconds ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -269,22 +419,22 @@ namespace DefenseAgainstTheDarkArts
 			return L"Windows 8.1";
 		}
 
-		if (IsWindows8OrGreater)
+		if (IsWindows8OrGreater())
 		{
 			return L"Windows 8";
 		}
 
-		if (IsWindows7SP1OrGreater)
+		if (IsWindows7SP1OrGreater())
 		{
 			return L"Windows 7 with Service Pack 1";
 		}
 
-		if (IsWindows7OrGreater)
+		if (IsWindows7OrGreater())
 		{
 			return L"Windows 7";
 		}
 
-		if (IsWindowsVistaSP2OrGreater)
+		if (IsWindowsVistaSP2OrGreater())
 		{
 			return L"Windows Vista with Service Pack 2";
 		}
@@ -319,7 +469,7 @@ namespace DefenseAgainstTheDarkArts
 			return L"Windows XP";
 		}
 
-		if (IsWindowsServer)
+		if (IsWindowsServer())
 		{
 			return L"Windows Server";
 		}
@@ -354,7 +504,6 @@ namespace DefenseAgainstTheDarkArts
 		return std::wstring(result, GetModuleFileNameW(nullptr, result, MAX_PATH));
 	}
 
-	
 	pplx::task<void> Stackify::PostMessage(std::wstring api_key, json::value message)
 	{
 		// Manually build up an HTTP request with header and request URI.
@@ -372,11 +521,12 @@ namespace DefenseAgainstTheDarkArts
 
 		return client.request(request).then([](web::http::http_response response)
 		{
-			if (response.status_code() == status_codes::OK)
+			//This is really just fire and forget.  Uncomment for debugging
+			/*if (response.status_code() == status_codes::OK)
 			{
 				auto body = response.extract_string();
 				std::wcout << L"Updated: " << body.get().c_str() << std::endl;
-			}
+			}*/
 		});
 	}
 
