@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 #include "Priority.h"
 #include "Exception.h"
 #include "Message.h"
@@ -40,13 +41,13 @@ namespace DefenseAgainstTheDarkArts
 
 		//Environment
 		void SetEnvironment(std::string env);
-		std::string GetEnvironment();
+		std::wstring GetEnvironment();
 
 		void SetApplicationName(std::string app_name);
-		std::string GetApplicationName();
+		std::wstring GetApplicationName();
 
 		void SetServerVariable(std::string key, std::string value);
-		std::string GetServerVariable(std::string key);
+		std::wstring GetServerVariable(std::string key);
 
 		bool log_server_variables;
 	private:
@@ -56,7 +57,7 @@ namespace DefenseAgainstTheDarkArts
 
 		std::string GetLocalComputerName();
 		std::string GetOperatingSystemVersion();
-		std::string GetTimezone();
+		std::string GetWindowsTimeZoneName();
 		std::string GetWorkingDirectory();
 
 		std::string api_key_;
@@ -67,6 +68,9 @@ namespace DefenseAgainstTheDarkArts
 		std::string logger_;
 		std::string platform_;
 
-		std::map<std::string, std::string> server_variables_;
+		map<std::string, std::string> server_variables_;
+		//pplx::task<void> PostMessage(web::json::object message);
+
 	};
 }
+

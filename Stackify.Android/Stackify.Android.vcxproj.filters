@@ -29,12 +29,6 @@
     <ClCompile Include="Stackify_Android.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Message.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Exception.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

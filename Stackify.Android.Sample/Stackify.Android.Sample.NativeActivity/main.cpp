@@ -160,18 +160,25 @@ static int32_t engine_handle_input(struct android_app* app, AInputEvent* event) 
 		engine->state.x = AMotionEvent_getX(event, 0);
 		engine->state.y = AMotionEvent_getY(event, 0);
 
-		//This is here to log an event to stackify when you click the screen in this example
-		DefenseAgainstTheDarkArts::Stackify_Android stackify("Your api key"); //Be sure to read Dont leak your strings on Defense Against the Dark Arts
-		
+		try {
+			//This is here to log an event to stackify when you click the screen in this example
+			DefenseAgainstTheDarkArts::Stackify stackify("Your api key here", "Android", "Development"); //Be sure to read Dont leak your strings on Defense Against the Dark Arts
 
-		web::json::object j = stackify.FormatMessage();
+			stackify.Information("This is a test information message");
+		}
+		catch (const std::exception& e)
+		{
+			//wcout << L"Caught exception." << endl;
+		}
+		
+		//web::json::object j = stackify.FormatMessage();
 		
 		// Write the current JSON value to a stream with the native platform character width
-		utility::stringstream_t stream;
-		j.serialize(stream);
+		//utility::stringstream_t stream;
+		//j.serialize(stream);
 
 		// Display the string stream
-		std::wcout << stream.str();
+		//std::wcout << stream.str();
 		
 
 		return 1;
@@ -233,6 +240,9 @@ static void engine_handle_cmd(struct android_app* app, int32_t cmd) {
 * event loop for receiving input events and doing other things.
 */
 void android_main(struct android_app* state) {
+
+	cpprest_init(state->activity->vm);  //This has to be here for the cpp rest sdk
+
 	struct engine engine;
 
 	memset(&engine, 0, sizeof(engine));

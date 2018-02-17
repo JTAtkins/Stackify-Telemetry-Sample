@@ -192,6 +192,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Stackify.Android;$(SolutionDir)Stackify.Android\x86\Debug;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-std=c++11 %(AdditionalOptions)</AdditionalOptions>
       <ExceptionHandling>Enabled</ExceptionHandling>
+      <CppLanguageStandard>c++11</CppLanguageStandard>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv1_CM;EGL;</LibraryDependencies>

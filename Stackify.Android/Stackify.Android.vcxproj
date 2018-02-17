@@ -161,8 +161,6 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Exception.cpp" />
-    <ClCompile Include="Message.cpp" />
     <ClCompile Include="Stackify_Android.cpp" />
   </ItemGroup>
   <ItemGroup>

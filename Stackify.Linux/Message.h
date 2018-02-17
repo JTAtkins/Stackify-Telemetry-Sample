@@ -3,6 +3,7 @@
 #include <map>
 #include "Priority.h"
 
+
 namespace DefenseAgainstTheDarkArts
 {
 	class Message
